@@ -4,16 +4,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// --- Local image-based icons ONLY (no Leaflet defaults) ---
-const cacheBust = "?v=3"; // bump to force-refresh CDN/browser
-
-const centerIcon = new L.Icon({
-  iconUrl: `/gray-pin.png${cacheBust}`,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  // no shadowUrl on purpose to avoid extra requests
-});
+// --- Local image-based icons ONLY ---
+const cacheBust = "?v=4"; // bump if images don't refresh
 
 const capitalIcon = new L.Icon({
   iconUrl: `/bbb-blue-pin.png${cacheBust}`,
@@ -31,11 +23,11 @@ const selectedZipIcon = new L.Icon({
 
 // --- State metadata ---
 const stateInfo = {
-  MA: { name: "Massachusetts", center: [42.4072, -71.3824], capital: { name: "Boston", coords: [42.3601, -71.0589]} },
-  ME: { name: "Maine", center: [45.2538, -69.4455], capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
-  NH: { name: "New Hampshire", center: [43.1939, -71.5724], capital: { name: "Concord", coords: [43.2081, -71.5376]} },
-  RI: { name: "Rhode Island", center: [41.5801, -71.4774], capital: { name: "Providence", coords: [41.8240, -71.4128]} },
-  VT: { name: "Vermont", center: [44.5588, -72.5778], capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
+  MA: { name: "Massachusetts", capital: { name: "Boston", coords: [42.3601, -71.0589]} },
+  ME: { name: "Maine", capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
+  NH: { name: "New Hampshire", capital: { name: "Concord", coords: [43.2081, -71.5376]} },
+  RI: { name: "Rhode Island", capital: { name: "Providence", coords: [41.824, -71.4128]} },
+  VT: { name: "Vermont", capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
 };
 
 // --- Data source ---
@@ -114,23 +106,14 @@ export default function BBBServiceAreaMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* State centers: neutral gray */}
-        {Object.entries(stateInfo).map(([abbrev, info]) => (
-          <Marker key={abbrev + "-center"} position={info.center} icon={centerIcon}>
-            <Popup>
-              <b>{info.name}</b>
-            </Popup>
-          </Marker>
-        ))}
-
-        {/* State capitals: BBB blue */}
+        {/* State capitals: BBB-blue pin */}
         {Object.values(stateInfo).map((info) => (
           <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={capitalIcon}>
             <Popup>{info.capital.name} (Capital)</Popup>
           </Marker>
         ))}
 
-        {/* User-selected ZIP: red */}
+        {/* User-selected ZIP: red pin */}
         {selected && (
           <Marker position={selected.coords} icon={selectedZipIcon}>
             <Popup>{selected.city}</Popup>
