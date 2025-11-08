@@ -1,40 +1,33 @@
-import React from "react";
-import BBBServiceAreaMap from "./BBBServiceAreaMap";
+body {
+  font-family: Verdana, Geneva, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-export default function App() {
-  return (
-    <div>
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "10px 20px",
-          borderBottom: "1px solid #ddd",
-        }}
-      >
-        <img
-          src="/bluechatlogo.png"
-          alt="BBB Logo"
-          style={{ height: "50px" }}
-        />
-        <h1
-          style={{
-            flexGrow: 1,
-            textAlign: "center",
-            margin: 0,
-            fontSize: "1.5rem",
-          }}
-        >
-          BBB in E. MA, ME, RI & VT Service Area Map
-        </h1>
-        {/* Spacer div to balance layout */}
-        <div style={{ width: "50px" }}></div>
-      </header>
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+}
 
-      <main style={{ textAlign: "center", marginTop: "20px" }}>
-        <BBBServiceAreaMap />
-      </main>
-    </div>
-  );
+.bbb-logo {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  height: 50px;
+}
+
+.app-title {
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+.app-main {
+  text-align: center;
+  margin-top: 20px;
 }
