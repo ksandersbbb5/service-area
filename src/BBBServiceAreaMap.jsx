@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
-import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -22,26 +22,6 @@ const selectedZipIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
-
-// --- Approximate boundary of New Hampshire (simplified polygon) ---
-const newHampshireCoords = [
-  [45.305802, -71.081902],
-  [45.053227, -71.504238],
-  [44.657227, -71.536736],
-  [44.196817, -71.700539],
-  [43.714487, -71.515961],
-  [43.365937, -71.500153],
-  [42.862469, -71.295280],
-  [42.697116, -71.307327],
-  [42.730874, -71.185875],
-  [43.064781, -70.818710],
-  [43.358841, -70.743179],
-  [43.744118, -70.826950],
-  [44.058289, -70.736099],
-  [44.475319, -70.802017],
-  [44.974358, -70.965820],
-  [45.305802, -71.081902],
-];
 
 // --- New England state metadata (capitals only, NH removed) ---
 const stateInfo = {
@@ -161,17 +141,6 @@ export default function BBBServiceAreaMap() {
         }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-        {/* Gray out New Hampshire */}
-        <Polygon
-          positions={newHampshireCoords}
-          pathOptions={{
-            color: "#999999",
-            weight: 1,
-            fillColor: "#cccccc",
-            fillOpacity: 0.5,
-          }}
-        />
 
         {/* State capitals (BBB blue pins, NH removed) */}
         {Object.values(stateInfo).map((info) => (
