@@ -24,7 +24,6 @@ const stateInfo = {
   VT: { name: "Vermont", center: [44.5588, -72.5778], capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
 };
 
-// Use your Google Sheet link for live data!
 const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXoaqswBMLcSrhngyOK4xxHG_5131cdiarnJrTcfJ7YZiCFnzaGDj0z5qvTuQ5P4lB3rB_1u1EnX1h/pub?gid=2052220952&single=true&output=csv";
 
