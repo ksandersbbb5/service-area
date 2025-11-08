@@ -1,33 +1,24 @@
-body {
-  font-family: Verdana, Geneva, sans-serif;
-  margin: 0;
-  padding: 0;
-}
+import React from "react";
+import BBBServiceAreaMap from "./BBBServiceAreaMap";
+import "./index.css"; // make sure this is imported so Verdana applies globally
 
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
-}
+export default function App() {
+  return (
+    <div className="app-container">
+      <header className="app-header">
+        <img
+          src="/bluechatlogo.png"
+          alt="BBB Logo"
+          className="bbb-logo"
+        />
+        <h1 className="app-title">
+          BBB in E. MA, ME, RI & VT Service Area Map
+        </h1>
+      </header>
 
-.bbb-logo {
-  position: absolute;
-  left: 20px;
-  top: 10px;
-  height: 50px;
-}
-
-.app-title {
-  text-align: center;
-  margin: 0;
-  font-size: 1.5rem;
-  font-family: Verdana, Geneva, sans-serif;
-}
-
-.app-main {
-  text-align: center;
-  margin-top: 20px;
+      <main className="app-main">
+        <BBBServiceAreaMap />
+      </main>
+    </div>
+  );
 }
