@@ -4,41 +4,29 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// --- Fix Leaflet's default marker asset paths (required for React/Vercel builds) ---
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
+// --- Local image-based icons ONLY (no Leaflet defaults) ---
+const cacheBust = "?v=3"; // bump to force-refresh CDN/browser
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+const centerIcon = new L.Icon({
+  iconUrl: `/gray-pin.png${cacheBust}`,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  // no shadowUrl on purpose to avoid extra requests
 });
 
-// --- Custom Icons ---
-// BBB blue (capitals): circular dot styled via DivIcon (no external asset needed)
-const bbbBlueIcon = new L.DivIcon({
-  className: "bbb-blue-pin",
-  html:
-    '<div style="width:18px;height:18px;border-radius:50%;' +
-    'background:#005A9C;border:2px solid #ffffff;' +
-    'box-shadow:0 0 2px rgba(0,0,0,0.6)"></div>',
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
-  popupAnchor: [0, -10],
+const capitalIcon = new L.Icon({
+  iconUrl: `/bbb-blue-pin.png${cacheBust}`,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
 });
 
-// Red (selected ZIP): circular dot styled via DivIcon (clear visual contrast)
-const redIcon = new L.DivIcon({
-  className: "red-pin",
-  html:
-    '<div style="width:20px;height:20px;border-radius:50%;' +
-    'background:#C62828;border:2px solid #ffffff;' +
-    'box-shadow:0 0 2px rgba(0,0,0,0.6)"></div>',
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
-  popupAnchor: [0, -12],
+const selectedZipIcon = new L.Icon({
+  iconUrl: `/red-pin.png${cacheBust}`,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
 });
 
 // --- State metadata ---
@@ -46,7 +34,7 @@ const stateInfo = {
   MA: { name: "Massachusetts", center: [42.4072, -71.3824], capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", center: [45.2538, -69.4455], capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
   NH: { name: "New Hampshire", center: [43.1939, -71.5724], capital: { name: "Concord", coords: [43.2081, -71.5376]} },
-  RI: { name: "Rhode Island", center: [41.5801, -71.4774], capital: { name: "Providence", coords: [41.824, -71.4128]} },
+  RI: { name: "Rhode Island", center: [41.5801, -71.4774], capital: { name: "Providence", coords: [41.8240, -71.4128]} },
   VT: { name: "Vermont", center: [44.5588, -72.5778], capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
 };
 
@@ -126,25 +114,25 @@ export default function BBBServiceAreaMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* State centers: default Leaflet marker */}
+        {/* State centers: neutral gray */}
         {Object.entries(stateInfo).map(([abbrev, info]) => (
-          <Marker key={abbrev + "-center"} position={info.center}>
+          <Marker key={abbrev + "-center"} position={info.center} icon={centerIcon}>
             <Popup>
               <b>{info.name}</b>
             </Popup>
           </Marker>
         ))}
 
-        {/* State capitals: BBB-blue marker */}
+        {/* State capitals: BBB blue */}
         {Object.values(stateInfo).map((info) => (
-          <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={bbbBlueIcon}>
+          <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={capitalIcon}>
             <Popup>{info.capital.name} (Capital)</Popup>
           </Marker>
         ))}
 
-        {/* User-selected ZIP: red marker */}
+        {/* User-selected ZIP: red */}
         {selected && (
-          <Marker position={selected.coords} icon={redIcon}>
+          <Marker position={selected.coords} icon={selectedZipIcon}>
             <Popup>{selected.city}</Popup>
           </Marker>
         )}
