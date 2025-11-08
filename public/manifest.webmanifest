@@ -1,0 +1,28 @@
+{
+  "name": "BBB in E. MA, ME, RI & VT Service Area Map",
+  "short_name": "BBB Map",
+  "description": "Explore BBB's service area across Eastern Massachusetts, Maine, Rhode Island, and Vermont.",
+  "icons": [
+    {
+      "src": "/bbb-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/bbb-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/bbb-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#005A9C",
+  "orientation": "portrait"
+}
