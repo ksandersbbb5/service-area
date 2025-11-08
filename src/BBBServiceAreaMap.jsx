@@ -4,9 +4,11 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// --- Import PNG pins from local assets ---
 import bluePinUrl from "./assets/pins/bbb-blue-pin.png";
 import redPinUrl from "./assets/pins/red-pin.png";
 
+// --- Create custom icons using imported URLs ---
 const capitalIcon = new L.Icon({
   iconUrl: bluePinUrl,
   iconSize: [25, 41],
@@ -21,6 +23,7 @@ const selectedZipIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
+// --- New England state metadata (capitals only) ---
 const stateInfo = {
   MA: { name: "Massachusetts", capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
@@ -29,6 +32,7 @@ const stateInfo = {
   VT: { name: "Vermont", capital: { name: "Montpelier", coords: [44.2601, -72.5754]} },
 };
 
+// --- Google Sheet CSV data source ---
 const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXoaqswBMLcSrhngyOK4xxHG_5131cdiarnJrTcfJ7YZiCFnzaGDj0z5qvTuQ5P4lB3rB_1u1EnX1h/pub?gid=2052220952&single=true&output=csv";
 
@@ -38,24 +42,27 @@ export default function BBBServiceAreaMap() {
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
 
+  // --- Load service area data ---
   useEffect(() => {
     fetch(GOOGLE_SHEET_CSV_URL)
       .then((response) => response.text())
-      .then((data) =>
+      .then((data) => {
         Papa.parse(data, {
           header: true,
           skipEmptyLines: true,
           complete: (results) => setRows(results.data),
-        })
-      )
+        });
+      })
       .catch(() => setError("Unable to load service area data right now."));
   }, []);
 
+  // --- Handle ZIP search ---
   const handleSearch = () => {
     const normalizedZip = zip.trim().padStart(5, "0");
     const found = rows.find(
       (row) => row.ZipCode && row.ZipCode.trim().padStart(5, "0") === normalizedZip
     );
+
     if (!found) {
       setError(`The ${zip} is out of our service area`);
       setSelected(null);
@@ -77,6 +84,7 @@ export default function BBBServiceAreaMap() {
         fontFamily: "Verdana, Geneva, sans-serif",
       }}
     >
+      {/* ZIP search bar */}
       <div style={{ marginBottom: "1em", textAlign: "center" }}>
         <label htmlFor="zip-input" style={{ fontWeight: "bold", fontSize: "1.1em" }}>
           Enter Your Zip Code:
@@ -91,12 +99,17 @@ export default function BBBServiceAreaMap() {
         />
         <button
           onClick={handleSearch}
-          style={{ padding: "0.5em 1em", fontSize: "1em", cursor: "pointer" }}
+          style={{
+            padding: "0.5em 1em",
+            fontSize: "1em",
+            cursor: "pointer",
+          }}
         >
           Find Location
         </button>
       </div>
 
+      {/* Error message */}
       <div
         style={{
           margin: "1em 0",
@@ -109,9 +122,17 @@ export default function BBBServiceAreaMap() {
         {error}
       </div>
 
+      {/* Map */}
       <MapContainer
-        center={[43.67, -71.6]}
-        zoom={6}
+        center={[43.7, -70.5]} // middle of New England
+        zoom={7}
+        minZoom={6}
+        maxZoom={10}
+        maxBounds={[
+          [40.9, -75.5], // southwest corner (around CT)
+          [47.5, -66.8], // northeast corner (top of ME)
+        ]}
+        maxBoundsViscosity={1.0}
         style={{
           height: "500px",
           width: "100%",
@@ -122,6 +143,7 @@ export default function BBBServiceAreaMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
+        {/* State capitals (BBB blue pins) */}
         {Object.values(stateInfo).map((info) => (
           <Marker
             key={info.capital.name}
@@ -132,6 +154,7 @@ export default function BBBServiceAreaMap() {
           </Marker>
         ))}
 
+        {/* Selected ZIP (red pin) */}
         {selected && (
           <Marker position={selected.coords} icon={selectedZipIcon}>
             <Popup>{selected.city}</Popup>
