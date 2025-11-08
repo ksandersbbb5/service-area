@@ -23,11 +23,10 @@ const selectedZipIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
-// --- New England state metadata (capitals only) ---
+// --- New England state metadata (capitals only, NH REMOVED) ---
 const stateInfo = {
   MA: { name: "Massachusetts", capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
-  NH: { name: "New Hampshire", capital: { name: "Concord", coords: [43.2081, -71.5376]} },
   RI: { name: "Rhode Island", capital: { name: "Providence", coords: [41.824, -71.4128]} },
   VT: { name: "Vermont", capital: { name: "Montpelier", coords: [44.2601, -72.5754]} },
 };
@@ -143,7 +142,7 @@ export default function BBBServiceAreaMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* State capitals (BBB blue pins) */}
+        {/* State capitals (BBB blue pins, NH removed) */}
         {Object.values(stateInfo).map((info) => (
           <Marker
             key={info.capital.name}
