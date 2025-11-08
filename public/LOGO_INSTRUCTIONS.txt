@@ -1,0 +1,7 @@
+INSTRUCTIONS:
+Place your bluechatlogo.png file in this directory (public/).
+
+The logo will be displayed in the top right corner of the page.
+The logo image should be named: bluechatlogo.png
+
+For testing purposes, you can use any PNG image with that filename.

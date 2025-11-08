@@ -4,7 +4,20 @@ import BBBServiceAreaMap from "./BBBServiceAreaMap";
 export default function App() {
   return (
     <div>
-      <h1 style={{textAlign: "center"}}>BBB New England Service Area Map</h1>
+      <div style={{position: "relative"}}>
+        <h1 style={{textAlign: "center"}}>BBB New England Service Area Map</h1>
+        <img 
+          src="/bluechatlogo.png" 
+          alt="BBB Logo" 
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "20px",
+            height: "50px",
+            width: "auto"
+          }}
+        />
+      </div>
       <BBBServiceAreaMap />
     </div>
   );
