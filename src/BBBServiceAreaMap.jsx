@@ -5,9 +5,12 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const starIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Star-icon.png",
-  iconSize: [24, 24],
-  iconAnchor: [12, 12]
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png",
+  shadowSize: [41, 41]
 });
 const pinIcon = new L.Icon({
   iconUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg",
@@ -15,7 +18,6 @@ const pinIcon = new L.Icon({
   iconAnchor: [12, 12]
 });
 
-// States info (centers and capitals)
 const stateInfo = {
   MA: { name: "Massachusetts", center: [42.4072, -71.3824], capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", center: [45.2538, -69.4455], capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
@@ -46,8 +48,9 @@ export default function BBBServiceAreaMap() {
   }, []);
 
   const handleSearch = () => {
+    const normalizedZip = zip.trim().padStart(5, "0");
     const found = rows.find(
-      row => row.ZipCode && row.ZipCode.trim() === zip.trim()
+      row => row.ZipCode && row.ZipCode.trim().padStart(5, "0") === normalizedZip
     );
     if (!found) {
       setError(
