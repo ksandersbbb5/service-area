@@ -2,11 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>BBB Service Area Map</title>
+    <meta name="description" content="BBB service area map for E. MA, ME, RI & VT." />
+
+    <!-- PWA manifest (icons, app name, colors, display mode) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- iOS / iPadOS home-screen icon + settings -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="BBB Map" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Browser theme color (address bar, task switcher, etc.) -->
+    <meta name="theme-color" content="#005A9C" />
+
+    <!-- Fallback favicon (optional but silences 404s) -->
+    <link rel="icon" type="image/png" href="/bbb-icon-192.png" />
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Vite entry point -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
