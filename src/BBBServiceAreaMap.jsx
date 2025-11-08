@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Papa from "papaparse";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -23,6 +23,14 @@ const selectedZipIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
+// --- Default map view constants ---
+const DEFAULT_CENTER = [43.7, -70.5];
+const DEFAULT_ZOOM = 7;
+const DEFAULT_BOUNDS = [
+  [40.9, -75.5],
+  [47.5, -66.8],
+];
+
 // --- New England state metadata (capitals only, NH removed) ---
 const stateInfo = {
   MA: { name: "Massachusetts", capital: { name: "Boston", coords: [42.3601, -71.0589] } },
@@ -35,11 +43,41 @@ const stateInfo = {
 const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXoaqswBMLcSrhngyOK4xxHG_5131cdiarnJrTcfJ7YZiCFnzaGDj0z5qvTuQ5P4lB3rB_1u1EnX1h/pub?gid=2052220952&single=true&output=csv";
 
+// --- Component to reset map view ---
+function ResetViewButton({ mapRef }) {
+  const handleReset = () => {
+    if (mapRef.current) {
+      mapRef.current.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "1em" }}>
+      <button
+        onClick={handleReset}
+        style={{
+          padding: "0.6em 1.2em",
+          fontSize: "1em",
+          fontFamily: "Verdana, Geneva, sans-serif",
+          cursor: "pointer",
+          borderRadius: "8px",
+          border: "1px solid #ccc",
+          backgroundColor: "#f5f5f5",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+        }}
+      >
+        Reset Map View
+      </button>
+    </div>
+  );
+}
+
 export default function BBBServiceAreaMap() {
   const [rows, setRows] = useState([]);
   const [zip, setZip] = useState("");
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
+  const mapRef = useRef(null);
 
   // --- Load service area data ---
   useEffect(() => {
@@ -123,14 +161,12 @@ export default function BBBServiceAreaMap() {
 
       {/* Map */}
       <MapContainer
-        center={[43.7, -70.5]} // middle of New England
-        zoom={7}
+        whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
+        center={DEFAULT_CENTER}
+        zoom={DEFAULT_ZOOM}
         minZoom={6}
         maxZoom={10}
-        maxBounds={[
-          [40.9, -75.5], // southwest corner (around CT)
-          [47.5, -66.8], // northeast corner (top of ME)
-        ]}
+        maxBounds={DEFAULT_BOUNDS}
         maxBoundsViscosity={1.0}
         style={{
           height: "500px",
@@ -160,6 +196,33 @@ export default function BBBServiceAreaMap() {
           </Marker>
         )}
       </MapContainer>
+
+      {/* Reset Button */}
+      <ResetViewButton mapRef={mapRef} />
+
+      {/* Legend */}
+      <div
+        style={{
+          marginTop: "1em",
+          textAlign: "center",
+          fontSize: "0.9em",
+          color: "#333",
+          display: "flex",
+          justifyContent: "center",
+          gap: "2em",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+          <img src={bluePinUrl} alt="Capital Icon" style={{ width: "16px", height: "26px" }} />
+          <span>State Capital</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+          <img src={redPinUrl} alt="ZIP Icon" style={{ width: "16px", height: "26px" }} />
+          <span>ZIP Code Location</span>
+        </div>
+      </div>
     </div>
   );
 }
