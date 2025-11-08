@@ -8,6 +8,7 @@ export default function App() {
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           padding: "10px 20px",
           borderBottom: "1px solid #ddd",
         }}
@@ -15,9 +16,20 @@ export default function App() {
         <img
           src="/bluechatlogo.png"
           alt="BBB Logo"
-          style={{ height: "50px", marginRight: "15px" }}
+          style={{ height: "50px" }}
         />
-        <h1 style={{ margin: 0 }}>BBB New England Service Area Map</h1>
+        <h1
+          style={{
+            flexGrow: 1,
+            textAlign: "center",
+            margin: 0,
+            fontSize: "1.5rem",
+          }}
+        >
+          BBB in E. MA, ME, RI & VT Service Area Map
+        </h1>
+        {/* Spacer div to balance layout */}
+        <div style={{ width: "50px" }}></div>
       </header>
 
       <main style={{ textAlign: "center", marginTop: "20px" }}>
