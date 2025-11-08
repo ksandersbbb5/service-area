@@ -4,28 +4,53 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const starIcon = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png",
-  shadowSize: [41, 41]
-});
-const pinIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg",
-  iconSize: [24, 24],
-  iconAnchor: [12, 12]
+// --- Fix Leaflet's default marker asset paths (required for React/Vercel builds) ---
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
+// --- Custom Icons ---
+// BBB blue (capitals): circular dot styled via DivIcon (no external asset needed)
+const bbbBlueIcon = new L.DivIcon({
+  className: "bbb-blue-pin",
+  html:
+    '<div style="width:18px;height:18px;border-radius:50%;' +
+    'background:#005A9C;border:2px solid #ffffff;' +
+    'box-shadow:0 0 2px rgba(0,0,0,0.6)"></div>',
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+  popupAnchor: [0, -10],
+});
+
+// Red (selected ZIP): circular dot styled via DivIcon (clear visual contrast)
+const redIcon = new L.DivIcon({
+  className: "red-pin",
+  html:
+    '<div style="width:20px;height:20px;border-radius:50%;' +
+    'background:#C62828;border:2px solid #ffffff;' +
+    'box-shadow:0 0 2px rgba(0,0,0,0.6)"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -12],
+});
+
+// --- State metadata ---
 const stateInfo = {
   MA: { name: "Massachusetts", center: [42.4072, -71.3824], capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", center: [45.2538, -69.4455], capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
   NH: { name: "New Hampshire", center: [43.1939, -71.5724], capital: { name: "Concord", coords: [43.2081, -71.5376]} },
-  RI: { name: "Rhode Island", center: [41.5801, -71.4774], capital: { name: "Providence", coords: [41.8240, -71.4128]} },
+  RI: { name: "Rhode Island", center: [41.5801, -71.4774], capital: { name: "Providence", coords: [41.824, -71.4128]} },
   VT: { name: "Vermont", center: [44.5588, -72.5778], capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
 };
 
+// --- Data source ---
 const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXoaqswBMLcSrhngyOK4xxHG_5131cdiarnJrTcfJ7YZiCFnzaGDj0z5qvTuQ5P4lB3rB_1u1EnX1h/pub?gid=2052220952&single=true&output=csv";
 
@@ -37,41 +62,38 @@ export default function BBBServiceAreaMap() {
 
   useEffect(() => {
     fetch(GOOGLE_SHEET_CSV_URL)
-      .then(response => response.text())
-      .then(data => {
+      .then((response) => response.text())
+      .then((data) => {
         Papa.parse(data, {
           header: true,
           skipEmptyLines: true,
-          complete: results => setRows(results.data)
+          complete: (results) => setRows(results.data),
         });
-      });
+      })
+      .catch(() => setError("Unable to load service area data right now."));
   }, []);
 
   const handleSearch = () => {
     const normalizedZip = zip.trim().padStart(5, "0");
     const found = rows.find(
-      row => row.ZipCode && row.ZipCode.trim().padStart(5, "0") === normalizedZip
+      (row) => row.ZipCode && row.ZipCode.trim().padStart(5, "0") === normalizedZip
     );
     if (!found) {
-      setError(
-        <span style={{ color: "red", fontWeight: "bold" }}>
-          The {zip} is out of our service area
-        </span>
-      );
+      setError(`The ${zip} is out of our service area`);
       setSelected(null);
     } else {
       setError("");
       setSelected({
         city: found.City,
-        coords: [parseFloat(found.Lat), parseFloat(found.Lon)]
+        coords: [parseFloat(found.Lat), parseFloat(found.Lon)],
       });
     }
   };
 
   return (
-    <div style={{ padding: "1em", maxWidth: "1200px", margin: "auto" }}>
+    <div style={{ padding: "1em", maxWidth: "1200px", margin: "auto", fontFamily: "Verdana, Geneva, sans-serif" }}>
       <div style={{ marginBottom: "1em", textAlign: "center" }}>
-        <label htmlFor="zip-input" style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+        <label htmlFor="zip-input" style={{ fontWeight: "bold", fontSize: "1.1em" }}>
           Enter Your Zip Code:
         </label>
         <input
@@ -79,19 +101,32 @@ export default function BBBServiceAreaMap() {
           style={{ width: "8em", margin: "0 1em", fontSize: "1em" }}
           placeholder="Zip Code"
           value={zip}
-          onChange={e => setZip(e.target.value)}
+          onChange={(e) => setZip(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
         />
-        <button onClick={handleSearch} style={{ padding: "0.5em 1em", fontSize: "1em" }}>
+        <button onClick={handleSearch} style={{ padding: "0.5em 1em", fontSize: "1em", cursor: "pointer" }}>
           Find Location
         </button>
       </div>
-      <div style={{ margin: "1em 0", textAlign: "center", minHeight: "2em" }}>{error}</div>
+
+      <div style={{ margin: "1em 0", textAlign: "center", minHeight: "1.5em", color: error ? "#C62828" : undefined, fontWeight: "bold" }}>
+        {error}
+      </div>
+
       <MapContainer
         center={[43.67, -71.6]}
         zoom={6}
-        style={{ height: "500px", width: "100%", margin: "auto", borderRadius: "12px", boxShadow: "0 2px 12px #aaa" }}
+        style={{
+          height: "500px",
+          width: "100%",
+          margin: "auto",
+          borderRadius: "12px",
+          boxShadow: "0 2px 12px #aaa",
+        }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {/* State centers: default Leaflet marker */}
         {Object.entries(stateInfo).map(([abbrev, info]) => (
           <Marker key={abbrev + "-center"} position={info.center}>
             <Popup>
@@ -99,15 +134,17 @@ export default function BBBServiceAreaMap() {
             </Popup>
           </Marker>
         ))}
-        {Object.values(stateInfo).map(info => (
-          <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={starIcon}>
-            <Popup>
-              {info.capital.name} (Capital)
-            </Popup>
+
+        {/* State capitals: BBB-blue marker */}
+        {Object.values(stateInfo).map((info) => (
+          <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={bbbBlueIcon}>
+            <Popup>{info.capital.name} (Capital)</Popup>
           </Marker>
         ))}
+
+        {/* User-selected ZIP: red marker */}
         {selected && (
-          <Marker position={selected.coords} icon={pinIcon}>
+          <Marker position={selected.coords} icon={redIcon}>
             <Popup>{selected.city}</Popup>
           </Marker>
         )}
