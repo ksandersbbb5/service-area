@@ -4,30 +4,31 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// --- Local image-based icons ONLY ---
-const cacheBust = "?v=4"; // bump if images don't refresh
+// --- Helper for proper public-path resolution on Vercel/Vite ---
+const asset = (file) => `${import.meta.env.BASE_URL}${file}?v=6`; // cache-bust bump
 
+// --- Local image-based icons only (no Leaflet defaults) ---
 const capitalIcon = new L.Icon({
-  iconUrl: `/bbb-blue-pin.png${cacheBust}`,
+  iconUrl: asset("bbb-blue-pin.png"),
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
 
 const selectedZipIcon = new L.Icon({
-  iconUrl: `/red-pin.png${cacheBust}`,
+  iconUrl: asset("red-pin.png"),
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
 
-// --- State metadata ---
+// --- State metadata (capitals only) ---
 const stateInfo = {
   MA: { name: "Massachusetts", capital: { name: "Boston", coords: [42.3601, -71.0589]} },
   ME: { name: "Maine", capital: { name: "Augusta", coords: [44.3106, -69.7795]} },
   NH: { name: "New Hampshire", capital: { name: "Concord", coords: [43.2081, -71.5376]} },
   RI: { name: "Rhode Island", capital: { name: "Providence", coords: [41.824, -71.4128]} },
-  VT: { name: "Vermont", capital: { name: "Montpelier", coords: [44.2601, -72.5754]} }
+  VT: { name: "Vermont", capital: { name: "Montpelier", coords: [44.2601, -72.5754]} },
 };
 
 // --- Data source ---
@@ -71,9 +72,19 @@ export default function BBBServiceAreaMap() {
   };
 
   return (
-    <div style={{ padding: "1em", maxWidth: "1200px", margin: "auto", fontFamily: "Verdana, Geneva, sans-serif" }}>
+    <div
+      style={{
+        padding: "1em",
+        maxWidth: "1200px",
+        margin: "auto",
+        fontFamily: "Verdana, Geneva, sans-serif",
+      }}
+    >
       <div style={{ marginBottom: "1em", textAlign: "center" }}>
-        <label htmlFor="zip-input" style={{ fontWeight: "bold", fontSize: "1.1em" }}>
+        <label
+          htmlFor="zip-input"
+          style={{ fontWeight: "bold", fontSize: "1.1em" }}
+        >
           Enter Your Zip Code:
         </label>
         <input
@@ -84,12 +95,27 @@ export default function BBBServiceAreaMap() {
           onChange={(e) => setZip(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
         />
-        <button onClick={handleSearch} style={{ padding: "0.5em 1em", fontSize: "1em", cursor: "pointer" }}>
+        <button
+          onClick={handleSearch}
+          style={{
+            padding: "0.5em 1em",
+            fontSize: "1em",
+            cursor: "pointer",
+          }}
+        >
           Find Location
         </button>
       </div>
 
-      <div style={{ margin: "1em 0", textAlign: "center", minHeight: "1.5em", color: error ? "#C62828" : undefined, fontWeight: "bold" }}>
+      <div
+        style={{
+          margin: "1em 0",
+          textAlign: "center",
+          minHeight: "1.5em",
+          color: error ? "#C62828" : undefined,
+          fontWeight: "bold",
+        }}
+      >
         {error}
       </div>
 
@@ -106,9 +132,13 @@ export default function BBBServiceAreaMap() {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* State capitals: BBB-blue pin */}
+        {/* State capitals: BBB-blue pins */}
         {Object.values(stateInfo).map((info) => (
-          <Marker key={info.capital.name + "-capital"} position={info.capital.coords} icon={capitalIcon}>
+          <Marker
+            key={info.capital.name + "-capital"}
+            position={info.capital.coords}
+            icon={capitalIcon}
+          >
             <Popup>{info.capital.name} (Capital)</Popup>
           </Marker>
         ))}
